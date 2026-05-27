@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wsgi-asgi-from-scratch"
+version = "0.1.0"
+description = "A source-backed, code-first tutorial for learning WSGI and ASGI runtime internals."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "Gilles Major" }
+]
+dependencies = []
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"

@@ -37,7 +37,7 @@ By the end, you should understand:
 
 ## Chapter format
 
-Each chapter is a 30–60 minute runnable package:
+Each chapter is a 30–60 minute runnable package. Start from the reusable [chapter template](chapters/CHAPTER_TEMPLATE.md):
 
 - Small code diff
 - Short explanation
