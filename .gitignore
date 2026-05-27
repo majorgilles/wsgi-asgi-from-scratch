@@ -21,4 +21,7 @@ dist/
 # Tooling and editor state
 .idea/
 .vscode/
+Session.vim
+*.swp
+*.swo
 .DS_Store

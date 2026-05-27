@@ -4,6 +4,8 @@
 
 Build a minimal blocking HTTP server that shows the path from a client connection to request bytes and back to an HTTP response.
 
+For the line-by-line learning notes, see [NOTES.md](NOTES.md).
+
 ## Runnable command
 
 Start the server:
