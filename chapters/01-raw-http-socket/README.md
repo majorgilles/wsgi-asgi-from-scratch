@@ -22,6 +22,29 @@ curl -i http://127.0.0.1:8000/
 
 You should see a `200 OK` response in `curl`, and the server terminal should print the client address and request line.
 
+## Stopping the server
+
+The server runs in a `while True` loop, so the terminal running it belongs to the Python process until you stop it. After handling one request, seeing `Waiting for a client connection...` again means the server is working and waiting for the next client connection.
+
+In a normal terminal, stop it with:
+
+```text
+Ctrl-C
+```
+
+In a Neovim `:terminal` split, make sure the terminal buffer is in input mode first:
+
+```text
+i
+Ctrl-C
+```
+
+If the server still does not stop, kill the process listening on port `8000` from another terminal:
+
+```bash
+kill $(lsof -ti tcp:8000)
+```
+
 ## Flow trace / diagram
 
 ```text
