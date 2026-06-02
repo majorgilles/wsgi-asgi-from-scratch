@@ -2,7 +2,7 @@
 
 A source-backed, code-first tutorial project for Python backend developers who know web frameworks but want to understand the runtime internals underneath them.
 
-We build a tiny educational web runtime in 30–60 minute chapters:
+We build one tiny educational web runtime through 30–60 minute learning milestones:
 
 1. Raw HTTP over sockets
 2. WSGI from scratch
@@ -35,14 +35,33 @@ By the end, you should understand:
 - How Starlette/FastAPI/Django bridge sync and async code
 - How Gunicorn, Uvicorn, and Hypercorn map to these concepts
 
-## Chapter format
+## Codebase model
 
-Each chapter is a 30–60 minute runnable package. Start from the reusable [chapter template](chapters/CHAPTER_TEMPLATE.md):
+The project uses one evolving codebase. The runnable implementation lives in [`src/runtime_lab`](src/runtime_lab), and tests live in [`tests`](tests). There is no `chapters/` directory and no copied per-milestone server files.
 
-- Small code diff
-- Short explanation
-- One flow trace or diagram
-- One exercise
+From a fresh checkout, install the package in editable mode once:
+
+```bash
+python -m pip install -e ".[test]"
+```
+
+Then run the shared runtime with:
+
+```bash
+python -m runtime_lab
+```
+
+Each learning milestone is a small diff to the shared runtime package, its tests, and this README when explanation is needed.
+
+## Milestone format
+
+Each milestone should keep the same codebase evolving:
+
+- Small code diff to `src/runtime_lab/`
+- Matching test or validation change
+- Short README note when the mental model changes
+- One flow trace or diagram when it clarifies the runtime path
+- One exercise idea when useful
 - Source links
 - “What we simplified” note
 
@@ -52,24 +71,11 @@ Each chapter is a 30–60 minute runnable package. Start from the reusable [chap
 .
 ├── README.md
 ├── pyproject.toml
-├── chapters/
-│   ├── 00-scaffold/
-│   ├── 01-raw-http-socket/
-│   ├── 02-wsgi-callable/
-│   ├── 03-wsgi-request-lifecycle/
-│   ├── 04-wsgi-middleware-routing/
-│   ├── 05-wsgi-threading/
-│   ├── 06-gunicorn-worker-models/
-│   ├── 07-asyncio-event-loop/
-│   ├── 08-bare-asgi-app/
-│   ├── 09-tiny-asgi-server/
-│   ├── 10-asgi-streaming/
-│   ├── 11-asgi-lifespan/
-│   ├── 12-sync-async-interop/
-│   ├── 13-production-map/
-│   └── 14-capstone-failure-lab/
 ├── src/
 │   └── runtime_lab/
+│       ├── __init__.py
+│       ├── __main__.py          # python -m runtime_lab
+│       └── server.py            # single evolving runtime
 ├── tests/
 └── scripts/
 ```
@@ -96,7 +102,7 @@ Each chapter is a 30–60 minute runnable package. Start from the reusable [chap
 
 ## Simplification policy
 
-Every chapter should explicitly say what is being simplified.
+Every milestone should explicitly say what is being simplified.
 
 Examples:
 
@@ -105,16 +111,16 @@ Examples:
 - No keep-alive initially
 - No production-grade error handling
 - No HTTP/2
-- No true backpressure implementation until later chapters
+- No true backpressure implementation until later milestones
 - WebSocket support may be conceptual unless explicitly implemented
 - Thread/process behavior is educational, not a full Gunicorn clone
 
 ## Validation
 
-Most chapters should include at least one of:
+Most milestones should include at least one of:
 
 ```bash
-python chapters/<chapter>/server.py
+python -m runtime_lab
 curl -i http://127.0.0.1:8000/
 python -m pytest -q
 python scripts/load_slow.py

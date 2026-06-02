@@ -47,5 +47,10 @@ def serve_forever() -> None:
             print("\nShutting down server", flush=True)
 
 
-if __name__ == "__main__":
+def main() -> int:
     serve_forever()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
