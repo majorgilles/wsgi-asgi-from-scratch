@@ -71,6 +71,20 @@ Two WSGI keys are stream-like objects instead of plain strings:
 
 In plain language: `wsgi.input` is for incoming body data, and `wsgi.errors` is for outgoing diagnostic messages.
 
+## WSGI call flow
+
+```text
+curl
+  -> socket server accepts connection
+  -> recv() reads HTTP request bytes
+  -> build_environ() creates WSGI environ
+  -> app(environ, start_response)
+  -> start_response captures status and headers
+  -> app returns body bytes
+  -> build_response() creates HTTP response bytes
+  -> sendall() writes response to client
+```
+
 ## Milestone format
 
 Each milestone should keep the same codebase evolving:
