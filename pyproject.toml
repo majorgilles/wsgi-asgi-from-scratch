@@ -12,7 +12,9 @@ license = { text = "MIT" }
 authors = [
   { name = "Gilles Major" }
 ]
-dependencies = []
+dependencies = [
+    "ruff>=0.15.16",
+]
 
 [project.scripts]
 runtime-lab = "runtime_lab.server:main"

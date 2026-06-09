@@ -29,12 +29,16 @@ def test_runtime_code_lives_under_src_package() -> None:
 
 
 def test_build_response_includes_status_headers_and_body() -> None:
-    response = build_response()
+    response = build_response(
+        "200 OK",
+        [("Content-Type", "text/plain")],
+        b"Hello, WSGI",
+    )
 
     assert response.startswith(b"HTTP/1.1 200 OK\r\n")
     assert b"Content-Type: text/plain\r\n" in response
-    assert b"Content-Length: 12\r\n" in response
-    assert response.endswith(b"\r\n\r\nHello world!")
+    assert b"Content-Length: 11\r\n" in response
+    assert response.endswith(b"\r\n\r\nHello, WSGI")
 
 
 def test_wsgi_app_sets_status_headers_and_body() -> None:

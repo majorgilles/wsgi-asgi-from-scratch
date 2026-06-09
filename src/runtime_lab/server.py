@@ -13,19 +13,15 @@ def build_response(status: str, headers: Headers, body: bytes) -> bytes:
     ]
 
     header_bytes = b"".join(
-        f"{name}: {value}\r\n".encode("ascii")
-            for name, value in response_headers
+        f"{name}: {value}\r\n".encode("ascii") for name, value in response_headers
     )
 
-    return (
-        f"HTTP/1.1 {status}\r\n".encode("ascii")
-        + header_bytes
-        + b"\r\n"
-        + body
-    )
+    return f"HTTP/1.1 {status}\r\n".encode("ascii") + header_bytes + b"\r\n" + body
 
 
-def handle_client(client_socket: socket.socket, client_address: tuple[str, int]) -> None:
+def handle_client(
+    client_socket: socket.socket, client_address: tuple[str, int]
+) -> None:
     raw_request = client_socket.recv(4096)
 
     request_text = raw_request.decode("iso-8859-1")
@@ -48,8 +44,6 @@ def handle_client(client_socket: socket.socket, client_address: tuple[str, int])
     body = b"".join(body_chunks)
 
     client_socket.sendall(build_response(captured_status, caputured_headers, body))
-
-
 
 
 def serve_forever() -> None:
