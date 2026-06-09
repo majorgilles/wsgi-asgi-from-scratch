@@ -13,6 +13,11 @@ def build_environ(request_line: str) -> Environ:
         "REQUEST_METHOD": method,
         "PATH_INFO": path,
         "SERVER_PROTOCOL": protocol,
+        "wsgi.version": (1, 0),
+        "wsgi.url_scheme": "http",
+        "wsgi.multithread": False,
+        "wsgi.multiprocess": False,
+        "wsgi.run_once": False,
     }
 
 

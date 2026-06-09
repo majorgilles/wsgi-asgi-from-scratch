@@ -34,6 +34,11 @@ def test_build_environ_extracts_request_line_parts() -> None:
     assert environ["REQUEST_METHOD"] == "GET"
     assert environ["PATH_INFO"] == "/hello"
     assert environ["SERVER_PROTOCOL"] == "HTTP/1.1"
+    assert environ["wsgi.version"] == (1, 0)
+    assert environ["wsgi.url_scheme"] == "http"
+    assert environ["wsgi.multithread"] is False
+    assert environ["wsgi.multiprocess"] is False
+    assert environ["wsgi.run_once"] is False
 
 
 def test_build_response_includes_status_headers_and_body() -> None:

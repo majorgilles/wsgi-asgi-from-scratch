@@ -60,6 +60,17 @@ runtime-lab
 
 Each learning milestone is a small diff to the shared runtime package, its tests, and this README when explanation is needed.
 
+## WSGI environ notes
+
+A WSGI server passes an `environ` dictionary to the app. Some values are simple request facts, such as `REQUEST_METHOD`, `PATH_INFO`, and `SERVER_PROTOCOL`.
+
+Two WSGI keys are stream-like objects instead of plain strings:
+
+- `wsgi.input` is where the app reads request body bytes. For the current GET-only milestone, an empty `io.BytesIO(b"")` is enough; later POST/body support can put real request bytes there.
+- `wsgi.errors` is where the app writes error or debug text. For this tiny server, `sys.stderr` is a good minimal value.
+
+In plain language: `wsgi.input` is for incoming body data, and `wsgi.errors` is for outgoing diagnostic messages.
+
 ## Milestone format
 
 Each milestone should keep the same codebase evolving:
