@@ -7,21 +7,45 @@ HOST = "127.0.0.1"
 PORT = 8000
 
 
-def build_environ(request_line: str) -> Environ:
-    method, path, protocol = request_line.split()
+def header_name_to_environ_key(name: str) -> str:
+    normalized_name: str = name.upper().replace("-", "_")
 
-    return {
+    if normalized_name in ("CONTENT_TYPE", "CONTENT_LENGTH"):
+        return normalized_name
+
+    return "HTTP_" + normalized_name
+
+
+def build_environ(
+    request_line: str,
+    header_lines: list[str] | None = None,
+    body: bytes = b"",
+) -> Environ:
+    method, target, protocol = request_line.split()
+    path_info, _, query_string = target.partition("?")
+
+    environ: Environ = {
         "REQUEST_METHOD": method,
-        "PATH_INFO": path,
+        "PATH_INFO": path_info,
+        "QUERY_STRING": query_string,
         "SERVER_PROTOCOL": protocol,
         "wsgi.version": (1, 0),
         "wsgi.url_scheme": "http",
         "wsgi.multithread": False,
         "wsgi.multiprocess": False,
         "wsgi.run_once": False,
-        "wsgi.input": io.BytesIO(),  # No request body in this simple server
+        "wsgi.input": io.BytesIO(body),
         "wsgi.errors": sys.stderr,
     }
+
+    for header_line in header_lines or []:
+        name, separator, value = header_line.partition(":")
+        if not separator:
+            continue
+
+        environ[header_name_to_environ_key(name.strip())] = value.strip()
+
+    return environ
 
 
 def build_response(status: str, headers: Headers, body: bytes) -> bytes:
@@ -43,7 +67,10 @@ def handle_client(
     raw_request = client_socket.recv(4096)
 
     request_text = raw_request.decode("iso-8859-1")
-    request_line = request_text.splitlines()[0] if request_text else ""
+    request_head, _, body_text = request_text.partition("\r\n\r\n")
+    request_lines = request_head.splitlines()
+    request_line = request_lines[0] if request_lines else ""
+    header_lines = request_lines[1:]
 
     print(f"{client_address} - {request_line}", flush=True)
 
@@ -58,7 +85,8 @@ def handle_client(
         captured_status = status
         captured_headers = headers
 
-    environ = build_environ(request_line)
+    body_bytes = body_text.encode("iso-8859-1")
+    environ = build_environ(request_line, header_lines, body_bytes)
     body_chunks = app(environ, start_response)
     body = b"".join(body_chunks)
 

@@ -71,6 +71,58 @@ Two WSGI keys are stream-like objects instead of plain strings:
 
 In plain language: `wsgi.input` is for incoming body data, and `wsgi.errors` is for outgoing diagnostic messages.
 
+## HTTP request parsing notes
+
+A socket gives the server raw request bytes. After decoding those bytes, the server treats the request as three educational pieces:
+
+```text
+GET /echo?name=ada HTTP/1.1\r\n
+Host: 127.0.0.1:8000\r\n
+User-Agent: curl/8.0\r\n
+\r\n
+hello=world
+```
+
+The request line is the first line. It contains the HTTP method, the request target, and the protocol version:
+
+```text
+GET /echo?name=ada HTTP/1.1
+```
+
+For WSGI, the request target is split at `?`:
+
+```text
+/echo?name=ada
+  -> PATH_INFO: /echo
+  -> QUERY_STRING: name=ada
+```
+
+If there is no `?`, the whole target is `PATH_INFO` and `QUERY_STRING` is an empty string.
+
+Headers are the lines after the request line and before the blank line. Most header names become WSGI `HTTP_*` keys by uppercasing the name and replacing `-` with `_`:
+
+```text
+Host: 127.0.0.1:8000
+  -> HTTP_HOST: 127.0.0.1:8000
+
+User-Agent: curl/8.0
+  -> HTTP_USER_AGENT: curl/8.0
+```
+
+`Content-Type` and `Content-Length` are special WSGI/CGI names, so they do not get the `HTTP_` prefix:
+
+```text
+Content-Type: text/plain
+  -> CONTENT_TYPE: text/plain
+
+Content-Length: 11
+  -> CONTENT_LENGTH: 11
+```
+
+The blank line, written as `\r\n\r\n` in HTTP bytes, separates the request head from the request body. The request head means the request line plus headers. The body is the optional bytes after the blank line; POST support will place those bytes in `wsgi.input`.
+
+The end result is that the WSGI app does not need to know about sockets or raw HTTP text. It reads request facts from `environ` keys such as `REQUEST_METHOD`, `PATH_INFO`, `QUERY_STRING`, `HTTP_HOST`, and eventually `wsgi.input`.
+
 ## WSGI call flow
 
 ```text
