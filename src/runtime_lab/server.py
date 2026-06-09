@@ -1,5 +1,6 @@
 import socket
-
+import io
+import sys
 from runtime_lab.app import Environ, Headers, app
 
 HOST = "127.0.0.1"
@@ -18,6 +19,8 @@ def build_environ(request_line: str) -> Environ:
         "wsgi.multithread": False,
         "wsgi.multiprocess": False,
         "wsgi.run_once": False,
+        "wsgi.input": io.BytesIO(),  # No request body in this simple server
+        "wsgi.errors": sys.stderr,
     }
 
 

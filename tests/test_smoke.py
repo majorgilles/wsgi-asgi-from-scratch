@@ -1,3 +1,5 @@
+import io
+import sys
 from pathlib import Path
 
 import runtime_lab
@@ -39,6 +41,11 @@ def test_build_environ_extracts_request_line_parts() -> None:
     assert environ["wsgi.multithread"] is False
     assert environ["wsgi.multiprocess"] is False
     assert environ["wsgi.run_once"] is False
+
+    wsgi_input: object = environ["wsgi.input"]
+    assert isinstance(wsgi_input, io.BytesIO)
+    assert wsgi_input.read() == b""
+    assert environ["wsgi.errors"] is sys.stderr
 
 
 def test_build_response_includes_status_headers_and_body() -> None:
