@@ -37,7 +37,7 @@ By the end, you should understand:
 
 ## Codebase model
 
-The project uses one evolving codebase. The runnable implementation lives in [`src/runtime_lab`](src/runtime_lab), and tests live in [`tests`](tests). There is no `chapters/` directory and no copied per-milestone server files.
+The project uses one evolving codebase. The runnable implementation lives in [`src/runtime_lab`](src/runtime_lab), and helper scripts live in [`scripts`](scripts). There is no `chapters/` directory and no copied per-milestone server files.
 
 If you use `uv`, start the shared runtime server with:
 
@@ -54,11 +54,11 @@ curl -i http://127.0.0.1:8000/
 If you are not using `uv`, install the package in editable mode once and then run the same console script:
 
 ```bash
-python -m pip install -e ".[test]"
+python -m pip install -e .
 runtime-lab
 ```
 
-Each learning milestone is a small diff to the shared runtime package, its tests, and this README when explanation is needed.
+Each learning milestone is a small diff to the shared runtime package, helper scripts when useful, and this README when explanation is needed.
 
 ## WSGI environ notes
 
@@ -90,7 +90,7 @@ curl
 Each milestone should keep the same codebase evolving:
 
 - Small code diff to `src/runtime_lab/`
-- Matching test or validation change
+- Matching manual validation command or helper script when useful
 - Short README note when the mental model changes
 - One flow trace or diagram when it clarifies the runtime path
 - One exercise idea when useful
@@ -108,7 +108,6 @@ Each milestone should keep the same codebase evolving:
 │       ├── __init__.py
 │       ├── __main__.py          # python -m runtime_lab
 │       └── server.py            # single evolving runtime
-├── tests/
 └── scripts/
 ```
 
@@ -149,12 +148,11 @@ Examples:
 
 ## Validation
 
-Most milestones should include at least one of:
+Most milestones should include at least one manual validation example, such as:
 
 ```bash
 uv run runtime-lab
 curl -i http://127.0.0.1:8000/
-python -m pytest -q
 python scripts/load_slow.py
 ```
 
