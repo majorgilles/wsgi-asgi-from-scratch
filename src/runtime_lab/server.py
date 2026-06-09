@@ -1,9 +1,19 @@
 import socket
 
-from runtime_lab.app import Headers, app
+from runtime_lab.app import Environ, Headers, app
 
 HOST = "127.0.0.1"
 PORT = 8000
+
+
+def build_environ(request_line: str) -> Environ:
+    method, path, protocol = request_line.split()
+
+    return {
+        "REQUEST_METHOD": method,
+        "PATH_INFO": path,
+        "SERVER_PROTOCOL": protocol,
+    }
 
 
 def build_response(status: str, headers: Headers, body: bytes) -> bytes:
@@ -30,20 +40,21 @@ def handle_client(
     print(f"{client_address} - {request_line}", flush=True)
 
     captured_status = ""
-    caputured_headers: Headers = []
+    captured_headers: Headers = []
 
     def start_response(status: str, headers: Headers) -> None:
         # This callback runs inside app(), but handle_client() needs these
         # values after app() returns. nonlocal makes the assignments below
         # update the variables above instead of creating new local variables.
-        nonlocal captured_status, caputured_headers
+        nonlocal captured_status, captured_headers
         captured_status = status
-        caputured_headers = headers
+        captured_headers = headers
 
-    body_chunks = app({}, start_response)
+    environ = build_environ(request_line)
+    body_chunks = app(environ, start_response)
     body = b"".join(body_chunks)
 
-    client_socket.sendall(build_response(captured_status, caputured_headers, body))
+    client_socket.sendall(build_response(captured_status, captured_headers, body))
 
 
 def serve_forever() -> None:

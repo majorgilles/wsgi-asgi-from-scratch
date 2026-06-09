@@ -2,7 +2,7 @@ from pathlib import Path
 
 import runtime_lab
 from runtime_lab.app import app
-from runtime_lab.server import build_response
+from runtime_lab.server import build_environ, build_response
 
 
 def test_runtime_lab_package_imports() -> None:
@@ -26,6 +26,14 @@ def test_runtime_code_lives_under_src_package() -> None:
 
     assert (root / "src" / "runtime_lab" / "server.py").is_file()
     assert not (root / "server.py").exists()
+
+
+def test_build_environ_extracts_request_line_parts() -> None:
+    environ = build_environ("GET /hello HTTP/1.1")
+
+    assert environ["REQUEST_METHOD"] == "GET"
+    assert environ["PATH_INFO"] == "/hello"
+    assert environ["SERVER_PROTOCOL"] == "HTTP/1.1"
 
 
 def test_build_response_includes_status_headers_and_body() -> None:
