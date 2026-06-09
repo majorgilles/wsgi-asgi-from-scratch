@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import runtime_lab
+from runtime_lab.app import app
 from runtime_lab.server import build_response
 
 
@@ -34,3 +35,21 @@ def test_build_response_includes_status_headers_and_body() -> None:
     assert b"Content-Type: text/plain\r\n" in response
     assert b"Content-Length: 12\r\n" in response
     assert response.endswith(b"\r\n\r\nHello world!")
+
+
+def test_wsgi_app_sets_status_headers_and_body() -> None:
+    captured_status = ""
+    captured_headers: list[tuple[str, str]] = []
+
+    def start_response(status: str, headers: list[tuple[str, str]]) -> None:
+        # The fake callback is nested inside this test. nonlocal lets it update
+        # the outer variables so the assertions can inspect what the app sent.
+        nonlocal captured_status, captured_headers
+        captured_status = status
+        captured_headers = headers
+
+    body = list(app({}, start_response))
+
+    assert captured_status == "200 OK"
+    assert captured_headers == [("Content-Type", "text/plain")]
+    assert body == [b"Hello, WSGI"]

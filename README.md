@@ -39,16 +39,23 @@ By the end, you should understand:
 
 The project uses one evolving codebase. The runnable implementation lives in [`src/runtime_lab`](src/runtime_lab), and tests live in [`tests`](tests). There is no `chapters/` directory and no copied per-milestone server files.
 
-From a fresh checkout, install the package in editable mode once:
+If you use `uv`, start the shared runtime server with:
+
+```bash
+uv run runtime-lab
+```
+
+Keep that terminal open. From another terminal, send one HTTP request to the server with:
+
+```bash
+curl -i http://127.0.0.1:8000/
+```
+
+If you are not using `uv`, install the package in editable mode once and then run the same console script:
 
 ```bash
 python -m pip install -e ".[test]"
-```
-
-Then run the shared runtime with:
-
-```bash
-python -m runtime_lab
+runtime-lab
 ```
 
 Each learning milestone is a small diff to the shared runtime package, its tests, and this README when explanation is needed.
@@ -120,7 +127,7 @@ Examples:
 Most milestones should include at least one of:
 
 ```bash
-python -m runtime_lab
+uv run runtime-lab
 curl -i http://127.0.0.1:8000/
 python -m pytest -q
 python scripts/load_slow.py

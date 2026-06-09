@@ -1,18 +1,26 @@
 import socket
 
+from runtime_lab.app import Headers, app
+
 HOST = "127.0.0.1"
 PORT = 8000
 
 
-def build_response() -> bytes:
-    body = b"Hello world!"
+def build_response(status: str, headers: Headers, body: bytes) -> bytes:
+    response_headers = headers + [
+        ("Content-Length", str(len(body))),
+        ("Connection", "close"),
+    ]
+
+    header_bytes = b"".join(
+        f"{name}: {value}\r\n".encode("ascii")
+            for name, value in response_headers
+    )
 
     return (
-        b"HTTP/1.1 200 OK\r\n"
-        b"Content-Type: text/plain\r\n"
-        + f"Content-Length: {len(body)}\r\n".encode("ascii")
-        + b"Connection: close\r\n"
-        b"\r\n"
+        f"HTTP/1.1 {status}\r\n".encode("ascii")
+        + header_bytes
+        + b"\r\n"
         + body
     )
 
@@ -25,7 +33,23 @@ def handle_client(client_socket: socket.socket, client_address: tuple[str, int])
 
     print(f"{client_address} - {request_line}", flush=True)
 
-    client_socket.sendall(build_response())
+    captured_status = ""
+    caputured_headers: Headers = []
+
+    def start_response(status: str, headers: Headers) -> None:
+        # This callback runs inside app(), but handle_client() needs these
+        # values after app() returns. nonlocal makes the assignments below
+        # update the variables above instead of creating new local variables.
+        nonlocal captured_status, caputured_headers
+        captured_status = status
+        caputured_headers = headers
+
+    body_chunks = app({}, start_response)
+    body = b"".join(body_chunks)
+
+    client_socket.sendall(build_response(captured_status, caputured_headers, body))
+
+
 
 
 def serve_forever() -> None:
